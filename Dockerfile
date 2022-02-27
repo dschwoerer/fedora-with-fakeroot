@@ -25,7 +25,8 @@ RUN dnf install -y bison flex diffutils && dnf clean all \
  && make all \
  && make install \
  && make check \
- && rm -r /petsc-$VER/
+ && rm -r /petsc-$VER/ \
+ && (test ".$TYPE" != ".mini" || rm -rf /opt/petsc/share/petsc/examples )
 # Check is really slow
 # && make test \
 
