@@ -3,6 +3,7 @@ FROM registry.fedoraproject.org/fedora:latest
 ARG MPI=mpich
 ARG TYPE=minimal
 ARG PETSC_VERSION=3.16.4
+ARG OPENMP=1
 
 RUN test ".$TYPE" != ".mini" || echo "install_weak_deps=False" >> /etc/dnf/dnf.conf && rm /etc/yum.repos.d/*modular*
 
@@ -20,14 +21,14 @@ RUN dnf install -y bison flex diffutils && dnf clean all \
  && cd petsc-$VER/ \
  && /usr/bin/python3 ./configure --with-clanguage=cxx --with-mpi=yes --with-shared-libraries --with-precision=double --with-scalar-type=real \
     --download-mumps=1 --download-scalapack=1 --download-blacs=1 --download-fblas-lapack=1 \
-    --download-parmetis=1 --download-ptscotch=1 --download-metis=1 --with-openmp=1 --with-debugging=0 --prefix=/opt/petsc \
+    --download-parmetis=1 --download-ptscotch=1 --download-metis=1 --with-openmp=$OPENMP --with-debugging=0 --prefix=/opt/petsc \
     --with-python-exec=/usr/bin/python3 --with-mpi-dir=/usr/lib64/$MPI --with-blas-lib=flexiblas --with-lapack-lib=flexiblas\
  && make all \
  && make install \
  && make check \
  && rm -r /petsc-$VER/ \
  && (test ".$TYPE" != ".mini" || rm -rf /opt/petsc/share/petsc/examples )
-# Check is really slow
+# test is really slow
 # && make test \
 
 
