@@ -7,38 +7,45 @@ on:
     # Run on the 7th of each month at 13:37 to ensure the image stays up-to-date
     - cron:  '37 13 7 * *'
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  build:
-    name: Build container image
+  build-and-push-image:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: bout-base
-      USER: oi4ai
+    permissions:
+      contents: read
+      packages: write
+
     strategy:
       fail-fast: true
       matrix:
-        mpi: [mpich, openmpi]
-        type: [full, mini]
-        config:
-          - name: "With openmp"
-            openmp: 1
-            prefix: "openmp-"
-          - name: "Without openmp"
-            openmp: 0
-            prefix: ""
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ env.USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-      - uses: docker/build-push-action@v2
-        with:
-          push: true
-          build-args: |
-            MPI=${{ matrix.mpi }}
-            TYPE=${{ matrix.type }}
-            OPENMP=${{ matrix.config.openmp }}
-          tags: |
-            ${{ env.USER }}/${{ env.IMAGE_NAME }}:${{ matrix.config.prefix }}${{ matrix.mpi }}-${{ matrix.type }}
+        version: [39, 38, 37]
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          build-args: |
+            VER=${{ matrix.version }}
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
