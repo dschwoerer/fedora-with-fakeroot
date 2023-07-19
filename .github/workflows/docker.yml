@@ -19,9 +19,9 @@ jobs:
       packages: write
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        version: ['rawhide', 39, 38, 37, 36, 35]
+        version: ['rawhide', 38]
 
     steps:
       - name: Checkout repository
