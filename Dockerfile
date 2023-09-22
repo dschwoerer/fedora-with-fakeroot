@@ -1,5 +1,7 @@
 ARG VER=latest
 FROM registry.fedoraproject.org/fedora:$VER
+RUN dnf -y install dnf-plugins-core
+RUN dnf -y copr enable davidsch/testing
 RUN dnf -y install python3-{mpi4py-,}openmpi
 RUN adduser user
 USER user
