@@ -6,4 +6,5 @@ USER user
 WORKDIR /home/user
 COPY test.py .
 COPY test.sh .
+RUN bash test.sh
 CMD ["bash", "test.sh"]
