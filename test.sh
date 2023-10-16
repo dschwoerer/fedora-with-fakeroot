@@ -3,4 +3,6 @@ module load mpi/openmpi-x86_64
 export OMPI_MCA_rmaps_base_oversubscribe=yes
 export TRAVIS=true
 export FLEXIBLAS=NETLIB
-mpirun -np 2 python3 test.py
+df -h |grep shm
+mpirun -np 20 --oversubscribe python3 test.py
+df -h |grep shm
