@@ -1,4 +1,5 @@
 ARG VER=latest
 FROM registry.fedoraproject.org/fedora:$VER
 
-RUN dnf -y install fakeroot && dnf clean all
+COPY _copr:copr.fedorainfracloud.org:davidsch:testing.repo /etc/yum.repos.d/
+RUN dnf install -y hermes-3-mpich && dnf clean all
