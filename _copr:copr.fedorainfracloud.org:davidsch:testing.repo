@@ -8,3 +8,4 @@ gpgkey=https://download.copr.fedorainfracloud.org/results/davidsch/testing/pubke
 repo_gpgcheck=0
 enabled=1
 enabled_metadata=1
+priority=9
